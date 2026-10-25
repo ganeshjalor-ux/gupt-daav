@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gupt Daav · Room mein judo</title>
+<meta property="og:title" content="Gupt Daav · Doston ke saath">
+<meta property="og:description" content="Link dabao aur seedha room mein judo">
+<style>
+  /* the Gupt Daav colours */
+  :root { --room: #070b09; --lacquer: #101814; --baize: #11573c; --brass: #d9b45a; --brass-hi: #f6e2a6; --brass-lo: #876620; --ink: #ece7d8; --ink-dim: #9ea79a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; font-family: system-ui, sans-serif; color: var(--ink);
+    background: radial-gradient(900px 500px at 50% 0%, rgba(217,180,90,.12), transparent 60%), var(--room); text-align: center; }
+  main { width: 100%; max-width: 420px; display: grid; gap: 16px; }
+  .crest { width: 56px; height: 56px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; font-size: 1.6rem; color: #1b1407;
+    background: linear-gradient(180deg, var(--brass-hi), var(--brass) 60%, var(--brass-lo)); }
+  h1 { margin: 0; font-family: Georgia, serif; letter-spacing: .16em; color: var(--brass-hi); }
+  .card { background: linear-gradient(180deg, #152019, #0c1310); border: 1px solid var(--brass-lo); border-radius: 18px; padding: 18px; display: grid; gap: 10px; }
+  .lbl { color: var(--brass); font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .code { font-family: ui-monospace, monospace; font-size: 2.4rem; font-weight: 800; letter-spacing: .4em; padding-left: .4em; color: var(--brass-hi); }
+  .go { display: block; min-height: 54px; line-height: 54px; border-radius: 999px; font-weight: 800; font-size: 1.05rem; color: #1b1407; text-decoration: none;
+    background: linear-gradient(180deg, var(--brass-hi), var(--brass) 55%, var(--brass-lo)); border: 1px solid var(--brass-lo); }
+  p { margin: 0; color: var(--ink-dim); line-height: 1.5; font-size: .9rem; }
+  .bad { color: #e3554c; font-weight: 700; }
+</style>
+</head>
+<body>
+<main>
+  <div class="crest">♠</div>
+  <h1>GUPT DAAV</h1>
+  <div class="card" id="ok" hidden>
+    <div class="lbl">Aapko room mein bulaya gaya hai</div>
+    <div class="code" id="code"></div>
+    <a class="go" id="go" href="#">Gupt Daav mein kholo</a>
+    <p>App nahi khula? Pehle Gupt Daav app install karo (jisne bulaya hai unse APK maango), phir yeh link dobara dabao.<br>
+       Ya app mein: Gupt Daav › Doston ke saath › Door se › Room mein judo, aur upar wala code daalo.</p>
+  </div>
+  <div class="card" id="bad" hidden><p class="bad">Is link mein room code nahi hai.</p><p>Jisne bulaya hai unse naya link maango.</p></div>
+</main>
+<script>
+// The room code rides after #, so it never reaches any server: join.html#K7PQ
+const PKG = 'com.ganeshpatel.guptdaav';
+function codeFrom(loc) {
+  const raw = (loc.hash || '').replace(/^#/, '') || new URLSearchParams(loc.search).get('c') || '';
+  const c = raw.trim().toUpperCase();
+  return /^[A-Z0-9]{4}$/.test(c) ? c : null;
+}
+// Android's way to open an app from a web page; it opens nothing if the app is not installed
+function appLink(code) { return `intent://join/${code}#Intent;scheme=guptdaav;package=${PKG};end`; }
+const code = codeFrom(location);
+if (code) {
+  document.getElementById('ok').hidden = false;
+  document.getElementById('code').textContent = code;
+  const go = document.getElementById('go');
+  go.href = appLink(code);
+  // try at once; browsers that want a tap first still have the button
+  if (/Android/i.test(navigator.userAgent)) setTimeout(() => { location.href = appLink(code); }, 300);
+} else document.getElementById('bad').hidden = false;
+</script>
+</body>
+</html>
