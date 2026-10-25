@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gupt Daav · Room mein judo</title>
+<title>Gupt Daav · Join a room · रूम में जुड़ें</title>
 <meta property="og:title" content="Gupt Daav · Doston ke saath">
-<meta property="og:description" content="Link dabao aur seedha room mein judo">
+<meta property="og:description" content="Tap the link to join the room · लिंक दबाएँ और रूम में जुड़ें">
 <style>
   /* the Gupt Daav colours */
   :root { --room: #070b09; --lacquer: #101814; --baize: #11573c; --brass: #d9b45a; --brass-hi: #f6e2a6; --brass-lo: #876620; --ink: #ece7d8; --ink-dim: #9ea79a; }
@@ -29,34 +29,35 @@
 <body>
 <main>
   <div class="crest">♠</div>
-  <h1>GUPT DAAV</h1>
+  <h1>GUPT DAAV · गुप्त दाव</h1>
   <div class="card" id="ok" hidden>
-    <div class="lbl">Aapko room mein bulaya gaya hai</div>
+    <div class="lbl">You are invited to a room · आपको रूम में बुलाया गया है</div>
     <div class="code" id="code"></div>
-    <a class="go" id="go" href="#">Gupt Daav mein kholo</a>
-    <p>App nahi khula? Pehle Gupt Daav app install karo (jisne bulaya hai unse APK maango), phir yeh link dobara dabao.<br>
-       Ya app mein: Gupt Daav › Doston ke saath › Door se › Room mein judo, aur upar wala code daalo.</p>
+    <a class="go" id="go" href="#">Open the game · खेल खोलें</a>
+    <p>The app did not open? Install the app first (ask the friend who invited you for it), then tap this link again. Or in the app: the game › With friends › Far away › Join a room, and type the code above.</p>
+    <p>ऐप नहीं खुला? पहले ऐप इंस्टॉल करें (जिसने बुलाया है उनसे माँगें), फिर यह लिंक दोबारा दबाएँ. या ऐप में: खेल › दोस्तों के साथ › दूर से › रूम में जुड़ें, और ऊपर वाला कोड डालें.</p>
   </div>
-  <div class="card" id="bad" hidden><p class="bad">Is link mein room code nahi hai.</p><p>Jisne bulaya hai unse naya link maango.</p></div>
+  <div class="card" id="bad" hidden><p class="bad">This link has no room code. · इस लिंक में रूम कोड नहीं है.</p><p>Ask your friend for a new link. · जिसने बुलाया है उनसे नया लिंक माँगें.</p></div>
 </main>
 <script>
 // The room code rides after #, so it never reaches any server: join.html#K7PQ
 const PKG = 'com.ganeshpatel.guptdaav';
-function codeFrom(loc) {
-  const raw = (loc.hash || '').replace(/^#/, '') || new URLSearchParams(loc.search).get('c') || '';
-  const c = raw.trim().toUpperCase();
-  return /^[A-Z0-9]{4}$/.test(c) ? c : null;
+// #K7PQ is a Gupt Daav room; #K7PQ.vagbakari a room of that game
+function roomFrom(loc) {
+  const raw = ((loc.hash || '').replace(/^#/, '') || new URLSearchParams(loc.search).get('c') || '').trim();
+  const m = /^([A-Za-z0-9]{4})(?:\.([a-z]{3,20}))?$/.exec(raw);
+  return m ? { code: m[1].toUpperCase(), game: m[2] || null } : null;
 }
 // Android's way to open an app from a web page; it opens nothing if the app is not installed
-function appLink(code) { return `intent://join/${code}#Intent;scheme=guptdaav;package=${PKG};end`; }
-const code = codeFrom(location);
-if (code) {
+function appLink(r) { return `intent://join/${r.code}${r.game ? '/' + r.game : ''}#Intent;scheme=guptdaav;package=${PKG};end`; }
+const room = roomFrom(location);
+if (room) {
   document.getElementById('ok').hidden = false;
-  document.getElementById('code').textContent = code;
+  document.getElementById('code').textContent = room.code;
   const go = document.getElementById('go');
-  go.href = appLink(code);
+  go.href = appLink(room);
   // try at once; browsers that want a tap first still have the button
-  if (/Android/i.test(navigator.userAgent)) setTimeout(() => { location.href = appLink(code); }, 300);
+  if (/Android/i.test(navigator.userAgent)) setTimeout(() => { location.href = appLink(room); }, 300);
 } else document.getElementById('bad').hidden = false;
 </script>
 </body>
